@@ -31,6 +31,7 @@ Tools built on DynamoRIO and provided in our release package include:
 - The memory tracing tool [memtrace](https://github.com/DynamoRIO/dynamorio/blob/master/api/samples/memtrace_simple.c)
 - The basic block tracing tool [bbbuf](https://github.com/DynamoRIO/dynamorio/blob/master/api/samples/bbbuf.c)
 - The instruction counting tool [inscount](https://github.com/DynamoRIO/dynamorio/blob/master/api/samples/inscount.cpp)
+- The library call blocker (must be run with LD_BIND_NOW=1 as for now)
 
 ## Building your own custom tools
 
