@@ -22,8 +22,9 @@ module_data_t *libc;
 FILE *f = NULL;
 bool bb_in_app = false;
 app_pc app_base, app_end;
-struct forbid_func fns[BUF_LENGTH];
+struct forbid_func *fns = NULL;
 int fns_cur = 0;
+int count = 0;
 
 bool check_forbidden_functions(app_pc addr, bool mem)
 {
@@ -112,6 +113,7 @@ event_exit(void)
         if (fns[i].found & (1 << INS_EXEC))
             dr_printf("%s function is called\n", fns[i].name);
     }
+    dr_global_free(fns, count * sizeof(*fns));
 }
 
 static void
@@ -146,11 +148,17 @@ dr_client_main(client_id_t id, int argc, const char *argv[])
     f = fopen(argv[1], "r");
     char line[256];
     while (fgets(line, sizeof(line), f)) {
+      count++;
+    }
+    fns = dr_global_alloc(count * sizeof(*fns));
+    fseek(f, 0, SEEK_SET);
+    while (fgets(line, sizeof(line), f)) {
         strncpy(fns[fns_cur].name, line, strlen(line) - 1);
         fns[fns_cur].found = 0;
         fns[fns_cur].base = NULL;
         fns_cur++;
     }
+
     fclose(f);
 
     app_base = dr_get_main_module()->start;
